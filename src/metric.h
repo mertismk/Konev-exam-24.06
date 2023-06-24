@@ -1,3 +1,6 @@
+#ifndef METRIC_H
+#define METRIC_H
+
 #include <iostream>
 #include <map>
 
@@ -9,7 +12,8 @@ public:
   }
 
   bool add_metr(int key, int resp_t, int wait_t) {
-    if (metrics.find(key) != metrics.end()) {
+    if (key <= 0 || resp_t < 0 || wait_t < 0 ||
+        metrics.find(key) != metrics.end()) {
       return false; // Метрика уже существует
     }
     metrics[key] = std::make_pair(resp_t, wait_t);
@@ -20,7 +24,7 @@ public:
     if (metrics.empty()) {
       return false; // Метрики не найдены
     }
-    std::cout << "Key\tResponse Time\tWait Time" << std::endl;
+    std::cout << "Ключ\tВремя отклика\tВремя ожидания" << std::endl;
     for (auto const &[key, metric] : metrics) {
       std::cout << key << "\t" << metric.first << "\t\t" << metric.second
                 << std::endl;
@@ -44,24 +48,4 @@ private:
   ~MetricRegister() {}
 };
 
-int main() {
-  MetricRegister &registry = MetricRegister::getInstance();
-
-  // Добавляем метрики
-  registry.add_metr(1, 10, 5);
-  registry.add_metr(2, 20, 10);
-  registry.add_metr(3, 15, 8);
-
-  // Выводим метрики на экран
-  registry.show_metr();
-
-  // Вычисляем вспомогательную метрику
-  int cometr = registry.count_cometr(2);
-  if (cometr != -1) {
-    std::cout << "COMETR for key 2: " << cometr << std::endl;
-  } else {
-    std::cout << "Metric not found" << std::endl;
-  }
-
-  return 0;
-}
+#endif // METRIC_H
